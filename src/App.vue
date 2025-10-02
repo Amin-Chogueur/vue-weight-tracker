@@ -6,7 +6,6 @@ import WeightsChart from "./components/WeightsChart.vue";
 
 //state
 
-const name = ref("");
 const currentWeight = ref("");
 const weightStore = useWeightStore();
 const lastWeight = computed(() => {
@@ -16,16 +15,27 @@ const lastWeight = computed(() => {
 //methodes
 watch(
   () => weightStore.weights,
-  (newWeights) => {
-    localStorage.setItem("weights", JSON.stringify(newWeights));
+  (newWeight) => {
+    localStorage.setItem("weights", JSON.stringify(newWeight));
   },
   { deep: true }
 );
 
+watch(
+  () => weightStore.name,
+  (newName) => {
+    localStorage.setItem("name", JSON.stringify(newName));
+  },
+  { deep: true }
+);
 onMounted(() => {
-  const saved = localStorage.getItem("weights");
-  if (saved) {
-    weightStore.weights = JSON.parse(saved);
+  const savedWeight = localStorage.getItem("weights");
+  const savedName = localStorage.getItem("name");
+  if (savedWeight) {
+    weightStore.weights = JSON.parse(savedWeight);
+  }
+  if (savedName) {
+    weightStore.name = JSON.parse(savedName);
   }
 });
 
@@ -49,7 +59,7 @@ function handleAddWeight() {
         what`s up
         <input
           type="text"
-          v-model="name"
+          v-model="weightStore.name"
           placeholder="user name. . . "
           class="outline-none"
         />
@@ -64,10 +74,13 @@ function handleAddWeight() {
           <p class="text-sm text-gray-500">Current Weight</p>
         </div>
       </div>
-      <WeightsChart :weights="weightStore.weights" />
+      <WeightsChart
+        v-if="weightStore.weights.length > 0"
+        :weights="weightStore.weights"
+      />
       <form
         @submit.prevent="handleAddWeight"
-        class="flex gap-2 justify-center items-center mt-6"
+        class="flex gap-2 justify-center items-center mt-10"
       >
         <input
           type="text"

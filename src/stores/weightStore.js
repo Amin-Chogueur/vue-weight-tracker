@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 export const useWeightStore = defineStore("weight", {
   state: () => ({
     weights: [],
+    name: "",
   }),
 
   actions: {
